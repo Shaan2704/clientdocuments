@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Google Apps Script</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    .login-container h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    .form-button {
+      width: 100%;
+      padding: 14px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .form-button:hover {
+      background-color: #45a049;
+    }
+    .error-message {
+      color: red;
+      text-align: center;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    .success-message {
+      color: green;
+      text-align: center;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h1>Login</h1>
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <input type="text" id="pan" class="form-input" placeholder="Enter PAN" required>
+      <input type="number" id="yob" class="form-input" placeholder="Enter Year of Birth" required>
+      <button type="submit" class="form-button">Submit</button>
+    </form>
+    <div id="responseMessage" class="error-message"></div>
+  </div>
+
+  <script>
+    // Handle form submission
+    function handleLogin(event) {
+      event.preventDefault(); // Prevent default form submission
+
+      const pan = document.getElementById('pan').value;
+      const yob = document.getElementById('yob').value;
+      const responseMessage = document.getElementById('responseMessage');
+
+      // Validate fields
+      if (!pan || !yob) {
+        responseMessage.textContent = "Both PAN and Year of Birth are required.";
+        return;
+      }
+
+      // Call the Apps Script API with PAN and YOB
+      const url = `https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?pan=${pan}&yob=${yob}`;
+
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          // Display the result from the Apps Script
+          if (data === 'No matching record found. Please check your details.') {
+            responseMessage.textContent = data; // Error message
+            responseMessage.className = "error-message";
+          } else {
+            responseMessage.textContent = `Link: ${data}`; // Success message
+            responseMessage.className = "success-message";
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          responseMessage.textContent = "Something went wrong. Please try again.";
+          responseMessage.className = "error-message";
+        });
+    }
+  </script>
+
+</body>
+</html>
