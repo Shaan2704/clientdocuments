@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GST Auto Login - S.S. Chauhan & Co.</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <img src="https://cdn.sschauhan.co.in/banner.png" alt="Firm Banner" class="banner">
+        <h2>Search Party</h2>
+        <input type="text" id="searchBox" placeholder="Type to filter...">
+        <ul id="partyList">
+            {% for party in parties %}
+                <li onclick="triggerLogin('{{ party }}')">{{ party }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script>
+        const searchBox = document.getElementById("searchBox");
+        const partyList = document.getElementById("partyList");
+
+        searchBox.addEventListener("input", () => {
+            const filter = searchBox.value.toLowerCase();
+            Array.from(partyList.children).forEach(li => {
+                li.style.display = li.textContent.toLowerCase().includes(filter) ? "block" : "none";
+            });
+        });
+
+        function triggerLogin(party) {
+            fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ party })
+            })
+            .then(res => res.json())
+            .then(data => alert(data.message))
+            .catch(err => alert("Error: " + err));
+        }
+    </script>
+</body>
+</html>
